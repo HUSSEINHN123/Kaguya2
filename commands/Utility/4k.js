@@ -8,7 +8,7 @@ export default {
   execute: async ({ api, event, args }) => {
     try {
       if (!args[0]) {
-        return api.sendMessage("❌ يرجى تحديد 'inbox' أو 'create' كأول وسيطة.", event.threadID);
+        return api.sendMessage("⚠️ | يرجى تحديد 'وارد' أو 'إنشاء' كأول وسيطة.", event.threadID);
       }
 
       const command = args[0].toLowerCase();

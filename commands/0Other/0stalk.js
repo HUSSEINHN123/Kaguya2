@@ -31,8 +31,12 @@ export default {
       const balanceResult = await Economy.getBalance(uid); // تأكد من أن Economy مُعرّفة ومستوردة بشكل صحيح
       const money = balanceResult.data; // افتراض أن البيانات تُرجع بصيغة { data: amount }
 
+      // جلب تاريخ المحادثة
+      const threadHistory = await api.getThreadHistory(event.threadID);
+      const userMessageCount = threadHistory.filter(message => message.senderID === uid).length;
+
       const message = `
-•——[معلومات]——•\n\n✨ مــﻋــڷــﯡمــاٺ ؏ــن : 『${firstName}』\n❏اسمك👤: 『${name}』\n❏جنسك♋: 『${gender === 1 ? "أنثى" : "ذكر"}』\n❏صديق؟: 『${userIsFriend}』\n❏عيد ميلاد اليوم؟: 『${isBirthdayToday}』\n❏رابط البروفايل🔮: ${profileUrl}\n❏المعرف🌟: 『${uid}』\n❏رصيدك💰: ${money} دولار`;
+•——[معلومات]——•\n\n✨ مــﻋــڷــﯡمــاٺ ؏ــن : 『${firstName}』\n❏اسمك👤: 『${name}』\n❏جنسك♋: 『${gender === 1 ? "أنثى" : "ذكر"}』\n❏💰 رصيدك : ${money} دولار\n❏📩 عدد الرسائل : ${userMessageCount}\n❏صديق؟: 『${userIsFriend}』\n❏عيد ميلاد اليوم؟: 『${isBirthdayToday}』\n❏🌟 المعرف  : 『${uid}』\n❏رابط البروفايل🔮: ${profileUrl}`;
 
       api.sendMessage({
         body: message,

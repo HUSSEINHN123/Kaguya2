@@ -22,7 +22,7 @@ export default {
       // ترجمة الاستعلام من العربية إلى الإنجليزية
       const translatedQuery = await translateToEnglish(keySearchs);
 
-      const res = await axios.get(`https://hazee-social-downloader-9080f854bdab.herokuapp.com/pinterest?search=${encodeURIComponent(translatedQuery)}`);
+      const res = await axios.get(`https://gpt4withcustommodel.onrender.com/api/pin?title=${encodeURIComponent(translatedQuery)}`);
       const data = res.data.data;
 
       var num = 0;

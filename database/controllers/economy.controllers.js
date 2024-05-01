@@ -1,7 +1,7 @@
 import usersController from "./users.controllers.js";
 
 export default function ({ api, event }) {
-  const formatCurrency = (number) => new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 9 }).format(number);
+  const formatCurrency = (number) => new Intl.NumberFormat("ar-MA", { style: "currency", currency: "MAD", maximumFractionDigits: 9 }).format(number);
 
   const performTransaction = async ({ action, uid, coins }) => {
     try {
@@ -10,13 +10,13 @@ export default function ({ api, event }) {
       const sender = await data.find(event.senderID);
       const actionMessage = action === "increase" ? "cộng" : action === "decrease" ? "trừ" : "chuyển";
 
-      if (!user.status || !sender.status) return { status: false, data: `Không tìm thấy thông tin trong database` };
+      if (!user.status || !sender.status) return { status: false, data: `No information found in database` };
 
       const isInvalidCoins = !coins || isNaN(coins) || coins <= 0;
       const notEnoughCoins = action === "pay" && sender.data.data.money < coins;
       const negativeTotal = (action === "increase" || action === "pay") && user.data.data.money + coins < 0;
 
-      if (isInvalidCoins || notEnoughCoins || negativeTotal) return { status: false, data: `Số coins muốn ${actionMessage} không hợp lệ hoặc không đủ` };
+      if (isInvalidCoins || notEnoughCoins || negativeTotal) return { status: false, data: `Number of coins desired ${actionMessage} invalid or invalid or insifisant` };
 
       const total = action === "increase" || action === "pay" ? user.data.data.money + coins : user.data.data.money - coins;
       const senderMoney = sender.data.data.money;
@@ -26,11 +26,11 @@ export default function ({ api, event }) {
 
       return {
         status: true,
-        data: `Đã ${actionMessage} thành công ${formatCurrency(coins)} vào người dùng: ${user.data.data.name}`,
+        data: ` ${actionMessage} success ${formatCurrency(coins)} on the user: ${user.data.data.name}`,
       };
     } catch (err) {
       console.log(err);
-      return { status: false, data: "Đã xảy ra lỗi tại controllers economy" };
+      return { status: false, data: "An error occurred at controllers economy" };
     }
   };
 
@@ -43,10 +43,10 @@ export default function ({ api, event }) {
       const data = usersController({ api });
       const user = await data.find(uid);
 
-      return user.status ? { status: true, data: user.data.data.money } : { status: false, data: "Không tìm thấy người dùng trong database" };
+      return user.status ? { status: true, data: user.data.data.money } : { status: false, data: "User not found in database" };
     } catch (err) {
       console.log(err);
-      return { status: false, data: "Đã xảy ra lỗi tại controllers economy" };
+      return { status: false, data: "An error occurred at controllers economy" };
     }
   };
 

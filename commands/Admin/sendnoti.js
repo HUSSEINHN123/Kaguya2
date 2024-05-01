@@ -4,7 +4,7 @@ const evalCommand = {
   cooldowns: 5,
   description: "إرسال إشعار إلى جميع المجموعات!",
   role: "admin",
-  aliases: ["thongbao"],
+  aliases: ["ارسال"],
   execute: async ({ api, event, args, Threads }) => {
     const noidung = args.join(" ");
     if (!noidung) return api.sendMessage(" ⚠️ |الرجاء إدخال محتوى الرسالة الذي تريد إرساله إلى جميع المجموعات!", event.threadID, event.messageID);
@@ -17,7 +17,7 @@ const evalCommand = {
 
       for (const value of allThreads) {
         if (!isNaN(parseInt(value.threadID)) && value.threadID !== event.threadID) {
-          const { error } = await sendMessage(api, `[ إشعار من المشرف ]\n\n${noidung}`, value.threadID);
+          const { error } = await sendMessage(api, `【إشـٰـُ͢ـُٰـعـ๋͜‏ـۂاࢪ مـٰن اݪمـٰطُوُࢪ 】📫\n┍━━━━━»•» ⌖ «•«━━━━━┑\n${noidung}\n┕━━━━━»•» ⌖ «•«━━━━━┙`, value.threadID);
           if (error){
             fail++
           }

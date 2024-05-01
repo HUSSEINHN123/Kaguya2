@@ -2,7 +2,7 @@ import axios from "axios";
 import fs from "fs-extra";
 
 export default {
-  name: "تخيلي3",
+  name: "تخيلي4",
   author: "حسين يعقوبي",
   cooldowns: 60,
   description: "توليد صورة استنادًا إلى النص المدخل",
@@ -25,7 +25,7 @@ api.setMessageReaction("⏱️", event.messageID, (err) => {}, true);
       const { threadID, messageID } = event;
       let path = `./cache/generated_image.png`;
 
-      const generatedImage = (await axios.get(`https://deku-rest-api.onrender.com/dreamshaper?prompt=${encodeURIComponent(translatedQuery)}`, {
+      const generatedImage = (await axios.get(`https://deku-rest-api.replit.app/dreamshaper?prompt=${encodeURIComponent(translatedQuery)}`, {
         responseType: "arraybuffer",
       })).data;
 

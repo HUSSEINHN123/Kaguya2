@@ -1,12 +1,12 @@
 import moment from "moment-timezone";
 
 export default {
-  name: "أوبتايم",
+  name: "بيانات",
   author: "Kaguya Project",
   cooldowns: 60,
   description: "بيانات البوت",
   role: "member",
-  aliases: ["بيانات"],
+  aliases: ["مدة_التشغيل"],
   execute: async ({ args, api, event }) => {
     const currentTime = moment().tz('Africa/Casablanca').format('YYYY-MM-DD hh:mm:ss A');
 

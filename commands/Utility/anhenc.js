@@ -1,52 +1,46 @@
-import { existsSync, mkdirSync, writeFileSync, createReadStream } from "fs";
-import { join } from "path";
-import axios from "axios";
-import tinyurl from "tinyurl";
+import axios from 'axios';
+
+async function generateDescriptionFromPrompt(promptText) {
+    try {
+        // تحويل النص إلى الإنجليزية
+        const translationResponse = await axios.get(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q=${encodeURIComponent(promptText)}`);
+        const translatedText = translationResponse?.data?.[0]?.[0]?.[0];
+
+        // استخراج الكلمات الرئيسية من النص المُترجم
+        const keywords = translatedText.split(' ');
+
+        // إعادة بناء النص باللغة العربية
+        const descriptionResponse = await axios.get(`https://apis-samir.onrender.com/prompt?text=${encodeURIComponent(translatedText)}`);
+        const descriptionData = descriptionResponse.data;
+
+        return {
+            prompt: descriptionData.prompt,
+            keywords: keywords
+        };
+    } catch (error) {
+        console.error("حدث خطأ أثناء جلب الوصف:", error);
+        return null;
+    }
+}
 
 export default {
-  name: "جودة",
-  author: "Kaguya Project",
-  description: "تحسين الصورة وإرسالها مرة أخرى.",
-  role: "member",
-  async execute({ api, event, message }) {
-    api.setMessageReaction("🕐", event.messageID, (err) => {}, true);
-    const { type, messageReply } = event;
-    const { attachments, threadID, messageID } = messageReply || {};
-
-    if (type === "message_reply" && attachments) {
-      const [attachment] = attachments;
-      const { url, type: attachmentType } = attachment || {};
-
-      api.setMessageReaction("⚠️", event.messageID, (err) => {}, true);
-
-      if (!attachment || !["photo", "sticker"].includes(attachmentType)) {
-        return kaguya.reply("⚠️ | يجب عليك أن تقوم بالرد على صورة.");
-      }
-
-      try {
-        const shortUrl = await tinyurl.shorten(url);
-        const response = await axios.get(`https://ai-tools.replit.app/remini?url=${encodeURIComponent(shortUrl)}`, {
-          responseType: "arraybuffer"
-        });
-
-        const cacheDirectory = join(process.cwd(), "cache");
-        if (!existsSync(cacheDirectory)) {
-          mkdirSync(cacheDirectory, { recursive: true });
+    name: "برومبت",
+    author: "kaguya project",
+    role: "member",
+    description: "قم بتوليد وصف للكلمة من خلال برومبت",
+    execute: async ({ api, event, args }) => {
+        const promptText = args.join(" ");
+        if (!promptText) {
+            api.sendMessage("⚠️ | المرجو  ادخال كلمة ك برومبت.", event.threadID, event.messageID);
+            return;
         }
 
-        const imagePath = join(cacheDirectory, "remi_image.png");
-        writeFileSync(imagePath, Buffer.from(response.data));
-
-        api.setMessageReaction("✅", event.messageID, (err) => {}, true);
-
-        kaguya.reply({ attachment: createReadStream(imagePath) });
-      } catch (error) {
-        console.error(error);
-        message.reply("❌ | حدث خطأ أثناء تحسين الصورة.");
-      }
-    } else {
-      api.setMessageReaction("⚠️", event.messageID, (err) => {}, true);
-      kaguya.reply("⚠️ | الرجاء الرد على الصورة.");
+        const description = await generateDescriptionFromPrompt(promptText);
+        if (description) {
+            const message = `الوصف 📝 : \n${description.prompt}`;
+            api.sendMessage(message, event.threadID, event.messageID);
+        } else {
+            api.sendMessage("حدث خطأ أثناء جلب الوصف.", event.threadID, event.messageID);
+        }
     }
-  }
 };

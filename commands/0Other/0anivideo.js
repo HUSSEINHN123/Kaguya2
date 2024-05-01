@@ -1,47 +1,30 @@
 import axios from "axios";
-import fs from "fs";
-import path from "path";
+import fs from "fs-extra";
 
 export default {
-  name: "مقطع_أنمي2",
-  author: "kaguya project",
+  name: "بنات",
+  author: "حسين يعقوبي",
   role: "member",
-  description: "توليد مقاطع فيديو أنمي عشوائية.",
-  async execute({ api, event, message }) {
-    api.setMessageReaction("🕐", event.messageID, (err) => {}, true);
+  description: "الحصول على فيديو عشوائي من TikTok",
+  async execute({ api, event }) {
+    let videoPath = process.cwd() + "/cache/random_video.mp4";
 
     try {
-      const response = await axios.get("https://ani-vid.onrender.com/kshitiz");
-      const postData = response.data.posts;
-      const randomIndex = Math.floor(Math.random() * postData.length);
-      const randomPost = postData[randomIndex];
+      const response = await axios.get("https://random-tiktok-video-girl.onrender.com/random", { responseType: "stream" });
 
-      const videoUrls = randomPost.map(url => url.replace(/\\/g, "/"));
+      if (response.data) {
+        const videoResponse = response.data;
+        videoResponse.pipe(fs.createWriteStream(videoPath));
 
-      const selectedUrl = videoUrls[Math.floor(Math.random() * videoUrls.length)];
-
-      const videoResponse = await axios.get(selectedUrl, { responseType: "stream" });
-
-      const tempVideoPath = path.join(process.cwd(), "cache", `${Date.now()}.mp4`);
-      const writer = fs.createWriteStream(tempVideoPath);
-      videoResponse.data.pipe(writer);
-
-      writer.on("finish", async () => {
-        const stream = fs.createReadStream(tempVideoPath);
-        const user = response.data.user || "@user_unknown";
-        await api.sendMessage({
-          body: ` 💫 | تفضل مقطع الأنمي | 💫 `,
-          attachment: stream,
-        }, event.threadID);
-        api.setMessageReaction("✅", event.messageID, (err) => {}, true);
-        fs.unlink(tempVideoPath, (err) => {
-          if (err) console.error(err);
-          console.log(`Deleted ${tempVideoPath}`);
+        videoResponse.on("end", () => {
+          api.sendMessage({ attachment: fs.createReadStream(videoPath) }, event.threadID, () => fs.unlinkSync(videoPath), event.messageID);
         });
-      });
+      } else {
+        api.sendMessage("فشل في جلب فيديو عشوائي من TikTok. يرجى المحاولة مرة أخرى.", event.threadID, event.messageID);
+      }
     } catch (error) {
+      api.sendMessage("حدث خطأ أثناء جلب الفيديو العشوائي من TikTok. يرجى المحاولة مرة أخرى.", event.threadID, event.messageID);
       console.error(error);
-      api.sendMessage(" ❌ |عذرا، حدث خطأ أثناء معالجة طلبك.", event.threadID);
     }
-  }
+  },
 };

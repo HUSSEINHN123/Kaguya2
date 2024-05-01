@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export default {
-  name: "رابط",
+  name: "رابط2",
   author: "Thiệu Trung Kiên",
   cooldowns: 10,
   description: "قم بتحويل الصورة إلى رابط",

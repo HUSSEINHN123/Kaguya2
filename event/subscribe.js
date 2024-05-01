@@ -49,7 +49,7 @@ export default {
 ❏ إسم المطور : 『حسين يعقوبي』
 ❏ رابط المطور : https://www.facebook.com/profile.php?id=100076269693499\n✿━━━━━━━━━━━━━━━━━✿`;
 
-          const welcomeMessagePart2 = `✿━━━━━━━━━━━━━━━━━✿\n ✅ | تم قبول المجموعة بنجاح \n
+          const welcomeMessagePart2 = `✿━━━━━━━━━━━━━━━━━✿\n ⚙️  | جاري توصيل كاغويا البوت في المجموعة..... \n
 ❏ التاريخ : ${moment().tz("Africa/Casablanca").format("YYYY-MM-DD")}
 ❏ الوقت : ${moment().tz("Africa/Casablanca").format("HH:mm:ss")}
 \n✿━━━━━━━━━━━━━━━━━✿`;

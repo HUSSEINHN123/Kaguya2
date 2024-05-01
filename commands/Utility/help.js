@@ -4,12 +4,12 @@ import path from 'path';
 
 class Help {
   constructor() {
-    this.name = "أوامر";
+    this.name = "اوامر";
     this.author = "Kaguya Project";
     this.cooldowns = 60;
     this.description = "عرض قائمة الأوامر مع كيفية استعمال كل واحد!";
     this.role = "member";
-    this.aliases = ["اوامر"];
+    this.aliases = ["أوامر"];
     this.commands = global.client.commands;
     this.cache = {}; // Cache to store image paths
     this.tempFolder = path.join(process.cwd(), 'temp');
@@ -32,6 +32,10 @@ class Help {
   }
 
   async execute({ api, event, args }) {
+
+api.setMessageReaction("📝", event.messageID, (err) => {}, true);
+    
+    
     const [pageStr] = args;
     const page = parseInt(pageStr) || 1;
     const commandsPerPage = 5; // تعديل عدد الأوامر في كل صفحة
@@ -43,12 +47,13 @@ class Help {
     const totalCommands = commandList.length;
 
     if (pageStr && typeof pageStr === 'string' && pageStr.toLowerCase() === 'الكل') {
-      let allCommandsMsg = "•——[•——[قِـٰٚـِْ✮ِـٰٚـِْآئمِـٰٚـِْ✮ِـٰٚـِْة جِـٰٚـِْ✮ِـٰٚـِْمِـٰٚـِْ✮ِـٰٚـِْيِـٰٚـِْ✮ِـٰٚـِْعِـٰٚـِْ✮ِـٰٚـِْ آلِـٰٚـِْ✮ِـٰٚـِْأﯛ̲୭آمِـٰٚـِْ✮ِـٰٚـِْر║]——•\n]——•\n";
-      commandList.forEach((command, index) => {
-        const commandName = command.name.toLowerCase();
-        allCommandsMsg += `❏ الإسم : 『${commandName}』\n`;
-      });
-
+      let allCommandsMsg = "╭───────────────◊\n•——[قِـٰٚـِْ✮ِـٰٚـِْآئمِـٰٚـِْ✮ِـٰٚـِْة جِـٰٚـِْ✮ِـٰٚـِْمِـٰٚـِْ✮ِـٰٚـِْيِـٰٚـِْ✮ِـٰٚـِْعِـٰٚـِْ✮ِـٰٚـِْ آلِـٰٚـِْ✮ِـٰٚـِْأﯛ̲୭آمِـٰٚـِْ✮ِـٰٚـِْر║]——•\n";
+      
+commandList.forEach((command, index) => {
+  const commandName = command.name.toLowerCase();
+  allCommandsMsg += `❏ الإسم : 『${commandName}』\n`;
+});
+allCommandsMsg += "╰───────────────◊";
       await api.sendMessage(allCommandsMsg, event.threadID);
     } else if (!isNaN(page) && page > 0 && page <= totalPages) {
       let msg = `•——[قٰཻــ͒͜ـًائمـٰة أوُامـٰࢪ ڪاغــِْــٰوُيا ]——• اٰلـٰ̲ـہصـٰ̲ـہفـٰ̲ـہحـٰ̲ـة 🌞🌩 ${page}/${totalPages}:\nإجِٰـِۢمِٰـِۢآلِٰـِۢيِٰـِۢ عِٰـِۢدد آلِٰـِۢأﯛ̲୭آمِٰـِۢر : ${totalCommands} أمر\n\n`;
@@ -59,7 +64,7 @@ class Help {
         msg += `الأمر رقم : [${commandNumber}]\n❏الإسم : 『${command.name}』\n❏الوصف : 『${command.description}』\n\n`;
       });
 
-      msg += "✿━━━━━━━━━━━━━━━━━✿\nقم بكتابة *أوامر 'رقم الصفحة' من أجل رؤية باقي الصفحات \nأو قم بكتابة *اوامر الكل من أجل رؤية جميع الأوامر\n✿━━━━━━━━━━━━━━━━━✿\n\n";
+      msg += "✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏✎\nقم بكتابة *أوامر 'رقم الصفحة' من أجل رؤية باقي الصفحات \nأو قم بكتابة *اوامر الكل من أجل رؤية جميع الأوامر\n✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏✎\n\n";
 
       const randomImageUrl = this.randomImageUrls[Math.floor(Math.random() * this.randomImageUrls.length)];
       const tempImagePath = path.join(this.tempFolder, `random_image_${Date.now()}.jpeg`);

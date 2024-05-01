@@ -3,8 +3,8 @@ import fs from "fs-extra";
 import path from "path";
 import moment from "moment-timezone";
 
-const KievRPSSecAuth = process.env.KievRPSSecAuth || "FABaBBRaTOJILtFsMkpLVWSG6AN6C/svRwNmAAAEgAAACISOJ7nKbKfJGAQsYVbgbZArsOc6qXCqxuTgz+8HD14/hPkMHCFBFc05OH3fQaUibGBxHUBhjyMNlNJ4G2xaE+3E3qboQW9Ssh6dHsy5sVebSbffFcCPja0jl32j+HNzCTyb2RjxgpOnZ4I5+s0EmKIK5fKbRR9R/qutMk8tUEMbKDWP3fkMPlbgqa08rYyazF5DuwXabb/5/EgIkkU9V2wVk5MBoUBWKAz0yVRg0YTTGL+iRZE/s3V4o1IfG8v/vy5YVPpp7xdDHl04oKrJB9ydMJnnAUd3gRVyuSevK4L/9XzkWkkh6ABDcaWbnOdPTzcLHYbGqhfFivQeQQqr0Yucfvn0XrLlKoTcvK1TpFMdcF3sN3OSwNBJ93vVZsxH+da8yQUPc3aHQNGTq+YNhROD+q8y/z4SMx6IH0U51parpHyVFdrrtYbZerZjfpiGYVt2xLhz3VlUSgwkkiGhMrkWwDYHgmkwA6j2wRq44X12Uq4hOYe+3ROPoF/F4i5ZZDd/SWy8ibIrhvxE7Avt+jaOwUsLZOqaqhyGHX8gxq6cYfaq93EAR+nCEsUtA9iLX6QQK4cXtIs1HzZlvHw4MxZLqJSu2b327FClNd3G1aiQt2aFbwSpYflIiei8mhGyiJmR8KNE55uZTWN/4ibC48voNsfsqs/q1Lb4TRBFVkR7FjJrs5EPdzCS0Qid1U+IhlBkIFNgXBkq1KZjZO/4QW3SBVqUaVogqCIjOKkPXzNfHv4/5DlnebopbJ7H3joaQWFfnRk34hH+h7T/3T3vxbDJTFtHW6ic6N/EFEDRGF3mHV9GbKFOWtEE9fdqmF8W8jS9Kg+wPAY3MwhXsr201hqF32fJNT3CkOkZ0UdbHlImjUkWu0sd8rWzhVPaT3+UH7QIcK4enEj/74iwK64S/89EhQ0VZZunLsZ+EMe1b05fyFfkflki8R2vkQjie/ZdShC8RClxAhMMybwKC6qXrFCPoFfUiupooGvflCxTqB58URMSeTstViqO1IDx/zu51l3YOXrVz214y3yJVSVa5wEu9rkkmygGnMuaZ5pSwJhUl7LMpiHos76alDSTjnTkQrWqkVinSpf1B6oSIjUIVvxHVaojJL2XQMauQGVpDfyoTj7VLchm/mL1ARTa2jBd/2pz8RUXVcxD8ajam3a3xiwZFowlIokze+h2nR6U4MDi7Sbui+1gee7j9k2W9dqe5rQAtVWnFN0CvzpJdGy5WkMfKOIcKk4gJCd9TTw1pcBBB0SS+7tU3EyDQo9HqANmVDff8DJub4KSJ8CyhKXHXC9Z4FG108SA6szQI86wvJr81LGwS88STuBH4/PJUxYiH1Wmbe4D0SRqcsB72nvU0IYujCi9BWZbdJONYIVL0c4NZqg8diQCLCDIQ3/yTV5Z3gJTFACCwEr3M47cbStGo5bhBcM5ACSvgQ==";
-const _U = process.env._U || "10SrkyDrapYjO80Wly3mALjCck-UTsifkB2bolD-YP4MGLymzDyAXDQcK7zpskZh04o0AFXxV3Mdv3q22EiEK3rPgg8ZhSn6Eyg5XhklK5ACd1Dp4S8PtLR1oKe4VcgjGnbhUWgm4nOmEwv1rbNpoFDelVDlw9We9jZAxXDvfp0EwoZBTtjKd0qBbhGh7J6fJQzqsoG4TzqhkXqCJ2JTkAg";
+const KievRPSSecAuth = process.env.KievRPSSecAuth || "FABSBBRaTOJILtFsMkpLVWSG6AN6C/svRwNmAAAEgAAACDZVIGtfXpGmEASE6kUb1TabaAxlytZ/tC0vAQr9jh5I8Yrib5gxCnkOF5a4+ix/mF108N0pDNf3ZDEoUe9xhjDhmipGkPKD+bPIgQO/LSefDult8hBYJ2Zrx8ahsEJMCJUfnGfYkm6y/utpqwr0oBxP7Xl7VNkxrkbxfFPRKqvidgdKoBP/dYcDtTAVLWxVZjARWhwxro4KDMkLfD/baxZpFXFsbBZuFLzB6z0Nl2teLHjzMOFnaE4q2a8fcd3SghDb/TMc9S7+kSnTfmBvI5IR/OXhrbGzZxP1tXMJlb+ntJyAe/A+7cfGDyBdbTkBs6ENouD5ECDVrK5llxbdTM60XKAL9XMoqVSg+slQkScbrzG8rbsPwJyUU4AyMrsoYqWqW9Z5MShQIG5DCt/10PHnvTS57UBn/syaE0xj0CacsGGimSZma5mB5Bhbp/vloFLDhLBvyXsRXKtwOXh/tsRxMD1fGnnKhKAIZVFp5ssk8Mkh0gdZaO2uEl/Rk4Ze01462gk7FSCPCryafap7Zh5CMBXBF+2ElBIidyYcJ+DI0OQs/Wa7AC8RWggqnaHWt3fpwM2CW/rmHmk1ljLktlvg0L8qnA1WzMPgsZnBThLng2ghvQHOwodw0xs7M4rIfDtlWBrNmrUjHf5uaQlJ68wmnkHk2wKhSkt+sCHNKvusM7jwPUJrCkeJJFMzoR75cvMHmPWuwiTu1+SlfSZWfq1EOoofCNFR9PSjs45URlenpQQk4w6vdw+OBPDnHLwwq11/tc7bNtajlA1kmUFeqoFuB9cqDIfcN4pxwaaOnM63V2OOs0yvQ6ihxolwAb3Q71M5JJqsFvvgUHWkoJoJGajn9UkfmVoL4F0s4AE0uIPfBiM9J2Q9rukMrN7B6NLsQEVuBYKEVz4SmxwRK3pREbsdj76SbFpxy/jBBoa6u8gpm9PqJXRAngtw2nTJXH21ouu6NEFAGXUJtoGLlVInDgswsI69caXHYhY8rnasM3xo97Gl1mXuJDcSGHy9w2Hkfb1H6AThPLANJSckRkTCHPY1sWN+PdHacOlsn4m5kwoWFtbLNDbgOJWMxeUBGVAQs3KHZoxHhY8njQwHevrL8wmO69WJ1tWcCsXx36BnD+y4K52H5FjWqlfG0/9UWQDDCYgK9Kj8fL/M3SGFn3i52YXcA7DZoWGYmRAquyWfwGUH43U7Zov9a/neMMMLsI9spBq7vT06wmh5w/iB3E1CtT4hwYRau33wYqiRhG+WxFGALk4oLx0YDhG15FG9gJt0U7lBLVegHunZUj3HPCkQyiifskCUMNnFSTKAgnHC3xTr3PQprMibFiejzyAvFP6jgf0ViVUHVVdIhhVIbEQ8wWjkqFdKQLaHpjXy4yteXdfnLYufZLIqpm+LfhQAM/+G0tpUD9eDL1TBHJx+Hjq5ZbI=";
+const _U = process.env._U || "1hmZ7G0WD8Fowcm9dFVAnvA1ON0NzHG2aiR12vx3hQiN3hRji_R8V8wpV_JTJrVRsKO3lrnKKizXnVr85MnBJoPUWJHFtBz9LAPeqTwlCKoV4Vgbgo_lWMMJpaGsg69DMf9J_0MEp7jEI-E9IccoUxnlbBgqHn5CpY5F63qEE0aK_o4QJkeyq90qmBOwVUX7CsA9LdvLmsW18bdHZ85TmSA";
 
 export default {
   name: "تخيلي",
@@ -14,6 +14,9 @@ export default {
   role: "member",
   aliases: ["dalle", "دايل"],
   execute: async ({ api, event, args }) => {
+
+    api.setMessageReaction("⚙️", event.messageID, (err) => {}, true);
+    
     const prompt = args.join(" ");
     const senderID = event.senderID;
 
@@ -25,7 +28,7 @@ export default {
       const data = res.data.results.images;
 
       if (!data || data.length === 0) {
-        api.sendMessage("تم تلقي الاستجابة ولكن عناوين URL للصورة مفقودة", event.threadID, event.messageID);
+        api.sendMessage("⚠️ | إنتهت كل الكوكيزة الخاصة بتوليد الصور يرجى إنتظار المطور ريثما يقوم بشحن الأمر بكوكيز جديدة من أجل إستعمال هذا الأمر مجددا", event.threadID, event.messageID);
         return;
       }
 
@@ -38,7 +41,7 @@ export default {
       }
 
       // استخدام moment-timezone لجلب الوقت والتاريخ
-      const now = moment().tz("Asia/Kuwait");
+      const now = moment().tz("Africa/Casablanca");
       const timeString = now.format("HH:mm:ss");
       const dateString = now.format("YYYY-MM-DD");
       const executionTime = ((Date.now() - event.timestamp) / 1000).toFixed(2);
@@ -50,14 +53,17 @@ export default {
         }
         const userName = userInfo[senderID].name;
 
+
         await api.sendMessage({
           attachment: imgData,
-          body: `✿━━━━━━━━━━━━━━━━━✿\n✅ | تفضل صورك \nتم التنفيذ من طرف: ${userName}\n⏰ | ❏ الوقت: ${timeString}\n📅 | ❏ التاريخ: ${dateString}\n⏳ | ❏ وقت التنفيذ: ${executionTime} ثانية\n📝 | ❏الوصف: ${prompt}\n✿━━━━━━━━━━━━━━━━━✿`
+          body: `✿━━━━━━━━━━━━━━━━━✿\n✅ | تفضل نتيجة الوصف الخاصة بك \nتم التنفيذ من طرف: ${userName}\n⏰ | ❏ الوقت: ${timeString}\n📅 | ❏ التاريخ: ${dateString}\n⏳ | ❏ وقت التنفيذ: ${executionTime} ثانية\n📝 | ❏الوصف: ${prompt}\n✿━━━━━━━━━━━━━━━━━✿`
         }, event.threadID, event.messageID);
-      });
+      }); 
+
+      api.setMessageReaction("✓", event.messageID, (err) => {}, true);
 
     } catch (error) {
-      api.sendMessage("آسفة لا أستطيع 🥺", event.threadID, event.messageID);
+      api.sendMessage("⚠️ | إنتهت كل الكوكيزة الخاصة بتوليد الصور يرجى إنتظار المطور ريثما يقوم بشحن الأمر بكوكيز جديدة من أجل إستعمال هذا الأمر مجددا", event.threadID, event.messageID);
     }
   }
 };

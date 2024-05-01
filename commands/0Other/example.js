@@ -25,7 +25,7 @@ export default {
 
       const startTime = moment();
 
-      const emiResponse = (await axios.get(`https://deku-rest-api.onrender.com/emi?prompt=${encodeURIComponent(translatedQuery)}`, {
+      const emiResponse = (await axios.get(`https://deku-rest-api.replit.app/emi?prompt=${encodeURIComponent(translatedQuery)}`, {
         responseType: "arraybuffer",
       })).data;
 

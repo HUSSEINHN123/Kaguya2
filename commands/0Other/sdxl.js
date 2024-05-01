@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 export default {
-  name: "هينتاي",
+  name: "مثير",
   author: "ChatGPT",
   role: "member",
   description: "صةر مثيرة للفتيات في الأنمي.",

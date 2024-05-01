@@ -15,7 +15,7 @@ export default {
 
     try {
       const query = args.join(" ");
-      const apiUrl = `https://apis-samir.onrender.com/tiktok/search/${encodeURIComponent(query)}`;
+      const apiUrl = `https://last-api-30a30f1ae341.herokuapp.com/api/tiksearch?search=${encodeURIComponent(query)}`;
       const response = await axios.get(apiUrl);
 
       if (response.data.code === 0 && response.data.data.videos.length > 0) {
@@ -47,4 +47,4 @@ export default {
       api.sendMessage("❌ | عذرًا، حدث خطأ أثناء معالجة طلبك.", event.threadID);
     }
   }
-}; 
+};

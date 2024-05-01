@@ -8,29 +8,25 @@ class Kick {
 
   async execute({ api, event, Threads }) {
     try {
-        const mentions = Object.keys(event.mentions);
-        const threadData = (await Threads.find(event.threadID))?.data?.data;
+      const mentions = Object.keys(event.mentions);
+      const targetUserID = event?.messageReply?.senderID || (mentions.length > 0 ? mentions[0] : event.senderID);
+      const threadData = (await Threads.find(event.threadID))?.data?.data;
 
       if (!threadData.adminIDs.includes(api.getCurrentUserID())) {
-        return kaguya.reply(" ⚠️ | يحتاج البوت أن يكون آدمن لإستخدام هذه الميزة");
+        return api.sendMessage(" ⚠️ | يحتاج البوت أن يكون آدمن لإستخدام هذه الميزة", event.threadID);
       }
 
-      if (!mentions[0]) {
-        return kaguya.reply(" ⚠️ | يرحى عمل منشن للشخص اللذي تريد طرده من المحموعة");
+      if (!targetUserID) {
+        return api.sendMessage(" ⚠️ | يرجى عمل منشن للشخص الذي تريد طرده من المجموعة أو الرد على رسالته.", event.threadID);
       }
 
-      await Promise.all(
-        mentions.map(async (id) => {
-          try {
-            await api.removeUserFromGroup(id, event.threadID);
-          } catch (err) {
-            console.error(err);
-          }
-        })
-      );
+      await api.removeUserFromGroup(targetUserID, event.threadID);
+      api.sendMessage("✅ | طلباتك أوامر !\n ناقص واحد ناقص مشكلة 😌", event.threadID);
     } catch (err) {
       console.error(err);
-      return kaguya.reply(" ⚠️ |لقد حدث خطأ غير متوقع!");
+      api.sendMessage(" ⚠️ | لقد حدث خطأ غير متوقع!", event.threadID);
     }
   }
 }
+
+export default new Kick();

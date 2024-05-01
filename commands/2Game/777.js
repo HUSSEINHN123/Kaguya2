@@ -7,8 +7,8 @@ class JackpotGame {
   aliases = [];
 
   async execute({ event, Economy, args }) {
-    const MIN_BET_AMOUNT = 1000;
-    const MAX_BET_AMOUNT = 500000;
+    const MIN_BET_AMOUNT = 100;
+    const MAX_BET_AMOUNT = 1000;
     const SLOT_ITEMS = ["🍇", "🍉", "🍊", "🍏", "7⃣", "🍓", "🍒", "🍌", "🥝", "🥑", "🌽"];
     const { increase, decrease, getBalance } = Economy;
 

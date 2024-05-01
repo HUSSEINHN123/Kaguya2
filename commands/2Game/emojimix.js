@@ -28,7 +28,7 @@ export default {
         attachment: getImg.data
       }, event.threadID, event.messageID)
     } catch (error) {
-      console.error("Lỗi xảy ra: ", error);
+      console.error("حدث خطأ: ", error);
       return kaguya.reply(" ❌ |حدث خطأ أثناء معالجة. الرجاء معاودة المحاولة في وقت لاحق.");
     }
   },

@@ -1,66 +1,63 @@
-import axios from "axios";
-import path from "path";
-import fs from "fs-extra";
+import axios from 'axios';
 
-export default {
-  name: "صور",
-  author: "kaguya project",
-  description: "البحث عن صور على Pinterest باستخدام النص المترجم",
-  role: "member",
-  execute: async ({ api, event, args }) => {
+class PickupLine {
+  name = "اعجاب";
+  author = "مجهول";
+  role = "member";
+  description = "اجعل فتاة تحبك باستخدام منشن";
+  aliases = ["خط"];
 
-api.setMessageReaction("🔍", event.messageID, (err) => {}, true)    
-    
+  async execute({ api, event }) {
     try {
-      // تحويل النص المعطى إلى اللغة الإنجليزية
-      const translationResponse = await translateText(args.join(" "));
-      const translatedText = translationResponse.data[0][0][0];
+      const mention = Object.keys(event.mentions);
 
-      // البحث عن الصور على Pinterest
-      const images = await searchPinterestImages(translatedText);
+      if (mention.length !== 1) {
+        api.sendMessage(' ⚠️ | قم بعمل منشن لفتاة ما', event.threadID, event.messageID);
+        return;
+      }
 
-      // إرسال الصور إلى المستخدم
-      await sendImages(api, event, images);
+      const targetID = mention[0];
+      const userInfo = await api.getUserInfo(targetID);
+      const mentionName = userInfo[targetID]?.name;
+
+      if (!mentionName) {
+        api.sendMessage('Failed to get user info.', event.threadID, event.messageID);
+        return;
+      }
+
+      const response = await axios.get('https://vinuxd.vercel.app/api/pickup');
+
+      if (response.status !== 200 || !response.data || !response.data.pickup) {
+        throw new Error('Invalid or missing response from pickup line API');
+      }
+
+      const pickupline = response.data.pickup.replace('{name}', mentionName);
+      const message = `${mentionName}, ${pickupline} ?`;
+
+      // Translate message from English to Arabic
+      const translationResponse = await axios.get(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(message)}`);
+      const translatedMessage = translationResponse?.data?.[0]?.[0]?.[0] || message;
+
+      const attachment = await api.sendMessage({
+        body: translatedMessage,
+        mentions: [{
+          tag: event.senderID,
+          id: event.senderID,
+          fromIndex: translatedMessage.indexOf(mentionName),
+          toIndex: translatedMessage.indexOf(mentionName) + mentionName.length,
+        }],
+      }, event.threadID, event.messageID);
+
+      if (!attachment || !attachment.messageID) {
+        throw new Error('Failed to send message');
+      }
+
+      console.log(`Sent pickup line as a reply with message ID ${attachment.messageID}`);
     } catch (error) {
-      console.error(error);
-      api.sendMessage("❌ حدث خطأ أثناء البحث عن الصور.", event.threadID, event.messageID);
+      console.error(`Failed to send pickup line: ${error.message}`);
+      api.sendMessage('Sorry, something went wrong while trying to impress. Please try again later.', event.threadID);
     }
   }
-};
-
-// ترجمة النص إلى اللغة الإنجليزية
-async function translateText(text) {
-  const translationResponse = await axios.get(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q=${encodeURIComponent(text)}`);
-  return translationResponse;
 }
 
-// البحث عن الصور على Pinterest
-async function searchPinterestImages(keywords) {
-  const numberSearch = 20; // عدد الصور المطلوبة
-  const apiUrl = `https://turtle-apis.onrender.com/api/pinterest?search=${encodeURIComponent(keywords)}&keysearch=${numberSearch}`;
-  const response = await axios.get(apiUrl);
-  return response.data.images.slice(0, numberSearch); // استرجاع عدد محدود من الصور
-}
-
-// إرسال الصور إلى المستخدم
-async function sendImages(api, event, images) {
-  try {
-    const imgData = [];
-    for (let i = 0; i < images.length; i++) {
-      const imgResponse = await axios.get(images[i], { responseType: "arraybuffer" });
-      const imgPath = path.join(process.cwd(), `cache${i + 1}.jpg`);
-      await fs.outputFile(imgPath, imgResponse.data);
-      imgData.push(fs.createReadStream(imgPath));
-    }
-
-    api.setMessageReaction("📸", event.messageID, (err) => {}, true)
-
-    await api.sendMessage({ attachment: imgData }, event.threadID, event.messageID);
-
-    // حذف الصور المخزنة مؤقتًا
-    await fs.remove(path.join(process.cwd(), "cache"));
-  } catch (error) {
-    console.error(error);
-    api.sendMessage("❌ حدث خطأ أثناء إرسال الصور.", event.threadID, event.messageID);
-  }
-}
+export default new PickupLine();

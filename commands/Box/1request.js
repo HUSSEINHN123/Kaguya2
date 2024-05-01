@@ -1,95 +1,54 @@
-class PendingCommand {
-  name = "طلبات";
-  author = "Kaguya Project";
-  cooldowns = 60;
-  description = "قم بقبول أو رفض المجموعات المعلقة في ردهة الإنتظار";
-  role = "admin";
-  aliases = ["pending"];
+import axios from 'axios';
+import path from 'path';
+import fs from 'fs';
 
-  async execute({ api, event, args }) {
-    try {
-      const { body, threadID, senderID } = event;
-      const command = args[0];
+export default {
+  config: {
+    name: 'اعلام',
+    version: '1.0',
+    author: 'Your Name',
+    role: 0,
+    description: "لعبة خمن صورة العلم يعود لأي دولة ؟",
 
-      if (command === '-قبول' || command === '-إلغاء') {
-        const selectedThreads = body
-          .split(/\s+/)
-          .map(Number)
-          .filter((num) => !isNaN(num) && num > 0 && num <= pendingThreads[senderID].length);
+    execute: async function ({ api, event, Threads }) {
+      const tempImageFilePath = path.join(process.cwd(), 'cache', 'tempImage.jpg');
 
-        if (selectedThreads.length === 0) {
-          return api.sendMessage(' ⚠️ | إختيار غير صالح المرجو إختيار رقم بعدها قبول أو إلغاء من أجل إضافتها أو إلغائها من ردهة الإنتظار.', threadID);
-        }
+      const questions = [
+        { image: 'https://i.pinimg.com/originals/6f/a0/39/6fa0398e640e5545d94106c2c42d2ff8.jpg', answer: 'العراق', emoji: '🇮🇶' },
+        { image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Flag_of_Brazil.svg/256px-Flag_of_Brazil.svg.png', answer: 'البرازيل', emoji: '🇧🇷' },
+        // يمكنك إضافة المزيد من الأسئلة هنا...
+      ];
 
-        const acceptedThreads = [];
-        const canceledThreads = [];
+      // اختيار سؤال عشوائي
+      const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+      const correctAnswer = randomQuestion.answer;
 
-        for (const selectedThread of selectedThreads) {
-          const index = selectedThread - 1;
-          const threadInfo = pendingThreads[senderID][index];
-          if (threadInfo) {
-            if (threadInfo.action === 'accept') {
-              acceptedThreads.push(threadInfo.threadID);
-            } else if (threadInfo.action === 'cancel') {
-              canceledThreads.push(threadInfo.threadID);
-            }
+      try {
+        // جلب الصورة من الرابط المحدد في السؤال
+        const imageResponse = await axios.get(randomQuestion.image, { responseType: 'arraybuffer' });
+        fs.writeFileSync(tempImageFilePath, Buffer.from(imageResponse.data, 'binary'));
+
+        // إرسال الصورة مع السؤال إلى المحادثة
+        const attachment = [fs.createReadStream(tempImageFilePath)];
+        const message = `ما اسم علم هذه الدولة؟\nاختر الإجابة الصحيحة بالضغط على الإيموجي المناسب: ${randomQuestion.emoji}`;
+
+        api.sendMessage({ body: message, attachment }, event.threadID, async (error, info) => {
+          if (!error) {
+            // حفظ بيانات الرد للاستخدام في معالجة الإجابة الصحيحة
+            await Threads.setData(event.threadID, 'handleReply.messageID', info.messageID);
           }
-        }
-
-        if (acceptedThreads.length > 0) {
-          api.sendMessage(`المجموعات اللتي تم قبولها هي ${acceptedThreads.length} مجموعة في ردهة الإنتظار.`, threadID);
-          acceptedThreads.forEach((threadID) => {
-            api.sendMessage(' ✅ |تمت الموافقة على المجموعة من طرف المطور \n------------\nالبوت لا يحتاج إستخدام رمز فقط إستخدم \n------------------\nأوامر أو مساعدة لترى قائمة الأوامر \n----------------\nرابط حساب المطور : https://www.facebook.com/profile.php?id=100076269693499\n-----------------\nإذا كان هناك أي مشاكل يرحى التواصل معي\nنهاركم سعيد 🤙 ', threadID);
-          });
-        }
-
-        if (canceledThreads.length > 0) {
-          api.sendMessage(` ❎ | ' تم رفض ' ${canceledThreads.length} مجموعة في ردهة الإنتظار.`, threadID);
-          canceledThreads.forEach((threadID) => {
-            api.removeUserFromGroup(senderID, threadID);
-          });
-        }
-
-        delete pendingThreads[senderID];
-      } else {
-        try {
-          const pendingThreadsList = await getPendingThreads(api);
-          if (pendingThreadsList.length > 0) {
-            const pendingListMessage = generatePendingListMessage(pendingThreadsList);
-            api.sendMessage(pendingListMessage, threadID);
-            pendingThreads[senderID] = pendingThreadsList;
-          } else {
-            api.sendMessage(' [❗] |لا يوجد أي مجموعة في ردهة الإنتظار.', threadID);
-          }
-        } catch (error) {
-          console.error(error);
-          api.sendMessage(' ❌ |حدث خطأ أثناء جلب قائمة الجموعات.', threadID);
-        }
+        });
+      } catch (error) {
+        console.error('Error sending question:', error);
+        api.sendMessage('⚠️ | حدث خطأ أثناء إرسال السؤال. يرجى المحاولة مرة أخرى.', event.threadID);
       }
-    } catch (err) {
-      console.error(err);
-      api.sendMessage(" ⚠️ |لقد حدث خطأ غير متوقع!", event.threadID);
-    }
-  }
-}
+    },
 
-export default new PendingCommand();
-
-async function getPendingThreads(api) {
-  const spamThreads = await api.getThreadList(100, null, ['OTHER']);
-  const pendingThreads = await api.getThreadList(100, null, ['PENDING']);
-  const allThreads = [...spamThreads, ...pendingThreads];
-  const pendingThreadsList = allThreads
-    .filter((thread) => thread.isSubscribed && thread.isGroup)
-    .map((thread) => ({ threadID: thread.threadID, action: 'accept' }));
-  return pendingThreadsList;
-}
-
-function generatePendingListMessage(pendingThreadsList) {
-  let message = 'قائمة المجموعات في الإنتظار:\n'
-    pendingThreadsList.forEach((thread, index) => {
-    message += `${index + 1}. آيدي المجموعة : ${thread.threadID}\n`;
-  });
-  message += ' [⚠️] |من أجل أن تقبل أو ترفض مجموعة في ردهة الإنتظار, إستخدم "في_الإنتظار -قبول [الرقم]" أو "في_الإنتظار -إلغاء [الرقم]".';
-  return message;
-}
+    events: async function ({ api, event, Threads, Economy }) {
+      var reaction = ["♥️"];
+      if (event.reaction && event.senderID == api.getCurrentUserID() && reaction.includes(event.reaction)) {
+        api.unsendMessage(event.messageID);
+      }
+    },
+  },
+};

@@ -1,43 +1,29 @@
-import axios from 'axios';
-
-let isEnabled = true; // تم تعريف متغير لتمكين أو تعطيل SimSimi
+import axios from "axios";
 
 export default {
   name: "سيم",
-  author: "Kaguya Project",
+  author: "kaguya project",
   role: "member",
-  description: "التفاعل مع SimSimi للحصول على ردود آلية.",
-  async execute({ api, event, args }) {
+  description: "نموذج لمحاكاة الردود على الرسائل",
+  execute: async ({ api, event, args }) => {
+    const { threadID, messageID } = event;
+
     try {
-      if (args[0] === "إيقاف") {
-        isEnabled = false;
-        return api.sendMessage(" ❌ | سيم تم إيقافه", event.threadID, event.messageID);
-      } else if (args[0] === "تشغيل") {
-        isEnabled = true;
-        return api.sendMessage(" ✅ | سيم تم تشغيله.", event.threadID, event.messageID);
-      } else {
-        const ask = args.join(" ");
-        const response = await axios.get(`https://eurix-api.replit.app/sim?ask=${encodeURIComponent(ask)}`);
-        const result = response.data.respond;
-        api.sendMessage(result, event.threadID, event.messageID);
+      if (!args[0]) {
+        return api.sendMessage("⚠️ |الرجاء كتابة رسالة...", threadID, messageID);
       }
-    } catch(error) {
-      api.sendMessage(`خطأ: ${error}`, event.threadID);
-      console.log(error);
+
+      const content = encodeURIComponent(args.join(" "));
+      const response = await axios.get(`https://sim-api-ctqz.onrender.com/sim?query=${content}`);
+
+      if (response.data.error) {
+        return api.sendMessage(`خطأ: ${response.data.error}`, threadID, messageID);
+      } else {
+        return api.sendMessage(response.data.respond, threadID, messageID);
+      }
+    } catch (error) {
+      console.error(error);
+      return api.sendMessage("حدث خطأ أثناء جلب البيانات.", threadID, messageID);
     }
-  }
-};
-
-export const handleEvent = async function ({ api, event }) {
-  try {
-    if (!isEnabled) return; 
-
-    const message = event.body.toLowerCase();
-    const response = await axios.get(`https://eurix-api.replit.app/sim?ask=${encodeURIComponent(message)}`);
-    const result = response.data.respond;
-    api.sendMessage(result, event.threadID, event.messageID);
-  } catch(error) {
-    api.sendMessage(`خطأ: ${error}`, event.threadID);
-    console.log(error);
-  }
+  },
 };

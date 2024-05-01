@@ -17,7 +17,7 @@ export default {
     });
   },
   events: async ({ api, event }) => {
-    var reaction = ["❤️"];
+    var reaction = ["🙂"];
     if (event.reaction && event.senderID == api.getCurrentUserID() && reaction.includes(event.reaction)) {
       kaguya.unsend(event.messageID);
     }

@@ -19,7 +19,7 @@ export default {
         try {
             const profilePath = await getProfilePicture(mentionedUserID);
             const user = event?.messageReply?.senderID ? await api.getUserInfo(mentionedUserID) : null;
-            const name = user ? user[mentionedUserID].name : "الشخص المذكور";
+            const name = user ? user[mentionedUserID].name : ""; 
             const message = `تفضل صورة بروفايل ${name} :`;
             return api.sendMessage({ body: message, attachment: fs.createReadStream(profilePath) }, event.threadID, event.messageID);
         } catch (error) {

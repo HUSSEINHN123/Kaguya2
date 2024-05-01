@@ -1,29 +1,26 @@
 export default {
-  "prefix": "*",  // Bot prefix for command invocation
-  "language": "ar_AE",  // Language setting for the bot
-  "BOT_NAME": "ⓀⒶⒼⓊⓎⒶ",  // The name of the bot
-  "ADMIN_IDS": ["100076269693499"],  // Admin IDs who have special privileges
-
-  // Bot configuration options
+  "prefix": "*",
+  "language": "ar_MA",
+  "BOT_NAME": "ⓀⒶⒼⓊⓎⒶ",
+  "ADMIN_IDS": [
+    "100076269693499",
+    "100065328385465"
+  ],
   "options": {
-    "forceLogin": true,  // Force the bot to log in
-    "listenEvents": true,  // Listen for events
-    "listenTyping": false,  // Disable listening to typing events
-    "logLevel": "silent",  // Log level for the bot (silent, debug, etc.)
-    "updatePresence": true,  // Update the presence of the bot
-    "selfListen": true,  // Allow the bot to listen to itself
-    "userAgent": "Mozilla/5.0 (Linux; Android 9; SM-G973U Build/PPR1.180610.011) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Mobile Safari/537.36"  // User agent for the bot's interactions
+    "forceLogin": true,
+    "listenEvents": true,
+    "listenTyping": false,
+    "logLevel": "silent",
+    "updatePresence": true,
+    "selfListen": false,
+    "userAgent": "Mozilla/5.0 (Linux; Android 9; SM-G973U Build/PPR1.180610.011) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Mobile Safari/537.36"
   },
-
-  // Database configuration
   "database": {
-    "type": "json",  // Type of database ( json or mongodb )
+    "type": "json",
     "mongodb": {
-      // MongoDB URI for database connection (Only if the database type is MongoDB)
       "uri": "mongodb://0.0.0.0:27017"
     }
   },
-
-  "port": process.env.PORT || 3000,  // Port on which the bot will run
-  "mqtt_refresh": 1200000  // MQTT refresh interval
+  "port": 3000,
+  "mqtt_refresh": 1200000
 };

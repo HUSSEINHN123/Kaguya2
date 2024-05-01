@@ -1,36 +1,36 @@
-import axios from "axios";
-import fs from "fs";
-import path from "path";
+import axios from 'axios';
+import fs from 'fs';
+import path from 'path';
 
-export default {
-  name: "زوجة",
-  author: "kaguya project",
-  role: "member",
-  description: "توليد مقاطع فيديو Wifey عشوائية.",
-  async execute({ api, event }) {
+async function playVoice({ api, event, args, message }) {
     api.setMessageReaction("🕐", event.messageID, (err) => {}, true);
+    const categories = ["jjk", "naruto", "ds", "aot", "bleach", "onepiece"];
+
+    if (args.length !== 1 || !categories.includes(args[0].toLowerCase())) {
+      return message.reply(` ⚠️ | الرجاء تحديد فئة صالحة. الفئات المتاحة: ${categories.join(", ")}`);
+    }
 
     try {
-      const response = await axios.get(`https://wifey-csz1.onrender.com/kshitiz`, { responseType: "stream" });
+      const category = args[0].toLowerCase();
+      const response = await axios.get(`https://voice-kshitiz.onrender.com/kshitiz/${category}`, { responseType: "arraybuffer" });
 
-      const tempVideoPath = path.join(process.cwd(), "cache", `${Date.now()}.mp4`);
+      const tempVoicePath = path.join(process.cwd(), "cache", `${Date.now()}.mp3`);
+      fs.writeFileSync(tempVoicePath, Buffer.from(response.data, 'binary'));
 
-      const writer = fs.createWriteStream(tempVideoPath);
-      response.data.pipe(writer);
+      const stream = fs.createReadStream(tempVoicePath);
+      message.reply({ attachment: stream });
 
-      writer.on("finish", async () => {
-        const stream = fs.createReadStream(tempVideoPath);
-
-        api.sendMessage({
-          body : "تفضل إليك مقاطع عشواىية 🌟",
-          attachment: stream,
-        }, event.threadID);
-
-        api.setMessageReaction("✅", event.messageID, (err) => {}, true);
-      });
+      api.setMessageReaction("✅", event.messageID, (err) => {}, true);
     } catch (error) {
       console.error(error);
-      api.sendMessage(" ❌ |عذرا، حدث خطأ أثناء معالجة طلبك.", event.threadID);
+      message.reply("عذرًا، حدث خطأ أثناء معالجة طلبك.");
     }
-  }
+}
+
+export default {
+    name: "صوت_أنمي",
+    author: "مثال",
+    role: "member",
+    description: "يشغل صوتًا من فئة معينة.",
+    execute: playVoice
 };

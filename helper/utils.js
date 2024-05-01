@@ -2,7 +2,7 @@ import axios from "axios";
 import fs from "fs-extra";
 
 export default function ({ api, event }) {
-  const formatCurrency = (number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "VND", maximumFractionDigits: 9 }).format(number);
+  const formatCurrency = (number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "MAD", maximumFractionDigits: 9 }).format(number);
 
   const send = (message, callback) => (typeof callback === "function" ? api.sendMessage(message, event.threadID, callback) : api.sendMessage(message, event.threadID));
 
@@ -44,7 +44,7 @@ export default function ({ api, event }) {
         headers: {
           authority: "www.facebook.com",
           accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-          "accept-language": "ar",
+          "accept-language": "en",
           "sec-ch-prefers-color-scheme": "light",
           "sec-ch-ua": '"Chromium";v="106", "Google Chrome";v="106", "Not;A=Brand";v="99"',
           "sec-ch-ua-mobile": "?0",

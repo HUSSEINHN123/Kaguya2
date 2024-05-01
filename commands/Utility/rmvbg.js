@@ -56,6 +56,9 @@ export default {
 
             fs.writeFileSync(inputPath, res.data);
 
+api.setMessageReaction("✅", event.messageID, (err) => {}, true);
+            
+            
             const message = {
               body: ' ✅ | تم بنجاح إزالة الخلفية.',
               attachment: fs.createReadStream(inputPath),
