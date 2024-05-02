@@ -60,7 +60,7 @@ export default {
         }, event.threadID, event.messageID);
       }); 
 
-      api.setMessageReaction("✓", event.messageID, (err) => {}, true);
+      api.setMessageReaction("✅", event.messageID, (err) => {}, true);
 
     } catch (error) {
       api.sendMessage("⚠️ | إنتهت كل الكوكيزة الخاصة بتوليد الصور يرجى إنتظار المطور ريثما يقوم بشحن الأمر بكوكيز جديدة من أجل إستعمال هذا الأمر مجددا", event.threadID, event.messageID);
